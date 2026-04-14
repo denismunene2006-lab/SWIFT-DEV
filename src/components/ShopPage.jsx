@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function ShopPage({ products, loading, addToCart, shopSettings, backendConnected }) {
   const [searchTerm, setSearchTerm] = useState('')
@@ -159,6 +160,12 @@ export default function ShopPage({ products, loading, addToCart, shopSettings, b
                       <p className="mb-4 text-sm font-black text-blue-600">
                         {currencyLabel} {formatShopPrice(product.price)}
                       </p>
+                      <Link
+                        to={`/product/${product.id}`}
+                        className="mb-3 inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white py-3 text-xs font-black uppercase tracking-widest text-slate-700 transition hover:border-blue-200 hover:text-blue-700"
+                      >
+                        View Details
+                      </Link>
                       <button
                         onClick={() => addToCart(product)}
                         disabled={product.stock <= 0}

@@ -11,6 +11,7 @@ import AdminSettingsPage from './admin/AdminSettingsPage.jsx'
 import BackendSetupPage from './components/BackendSetupPage.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 import LoadingState from './components/LoadingState.jsx'
+import ProductDetailsPage from './components/ProductDetailsPage.jsx'
 import ShopPage from './components/ShopPage.jsx'
 import {
   ASSETS_BUCKET,
@@ -39,6 +40,7 @@ export default function App() {
   const [customerSearch, setCustomerSearch] = useState('')
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const [settingsSaved, setSettingsSaved] = useState(false)
+  const [productSavedMessage, setProductSavedMessage] = useState('')
   const [authForm, setAuthForm] = useState({ email: '', password: '' })
   const [authSubmitting, setAuthSubmitting] = useState(false)
   const [authError, setAuthError] = useState('')
@@ -49,7 +51,7 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const currentPath = location.pathname
-  const isShopRoute = currentPath === '/'
+  const isStorefrontRoute = currentPath === '/' || currentPath.startsWith('/product/')
   const mpesaEnabled = import.meta.env.VITE_ENABLE_MPESA_PAYMENTS === 'true'
 
   useEffect(() => {
@@ -164,6 +166,7 @@ export default function App() {
 
     setUploading(true)
     try {
+      const wasEditing = Boolean(editingId)
       let imageUrl = formData.image.trim()
       if (imageFile) imageUrl = await uploadAsset(imageFile, 'products')
 
@@ -186,6 +189,8 @@ export default function App() {
       setFormData(EMPTY_PRODUCT_FORM)
       setImageFile(null)
       setEditingId(null)
+      setProductSavedMessage(wasEditing ? 'Product updated successfully.' : 'Product created successfully.')
+      setTimeout(() => setProductSavedMessage(''), 3000)
       await fetchStorefrontData()
     } catch (error) {
       console.error('Failed to save product:', error.message)
@@ -346,11 +351,11 @@ export default function App() {
             <h1 className="text-xl font-black uppercase italic tracking-tighter">Swift</h1>
           </Link>
           <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
-            <Link to="/" className={`rounded-lg px-4 py-2 text-xs font-bold uppercase transition-all ${isShopRoute ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}>Shop</Link>
+            <Link to="/" className={`rounded-lg px-4 py-2 text-xs font-bold uppercase transition-all ${isStorefrontRoute ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}>Shop</Link>
             <Link to="/admin" className={`rounded-lg px-4 py-2 text-xs font-bold uppercase transition-all ${currentPath.startsWith('/admin') ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}>Admin</Link>
           </div>
         </div>
-        {isShopRoute && (
+        {isStorefrontRoute && (
           <button
             onClick={() => setIsCartOpen(true)}
             className={`flex items-center gap-2 rounded-full px-5 py-2.5 font-black transition-all ${
@@ -379,6 +384,7 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<ShopPage products={catalogProducts} loading={loadingStore} addToCart={addToCart} shopSettings={settings} backendConnected={hasBackendConfig} />} />
+        <Route path="/product/:productId" element={<ProductDetailsPage products={catalogProducts} loading={loadingStore} addToCart={addToCart} currencyLabel={currencyLabel} formatPrice={formatPrice} />} />
         <Route path="/checkout" element={<CheckoutPage cartItems={cart} totalAmount={totalCart} currencyLabel={currencyLabel} onOrderPlaced={() => { setCart([]); fetchOrders() }} paymentsEnabled={mpesaEnabled} />} />
         <Route
           path="/admin"
@@ -401,7 +407,7 @@ export default function App() {
           }
         >
           <Route index element={<AdminDashboardPage customerSearch={customerSearch} setCustomerSearch={setCustomerSearch} filteredCustomers={filteredCustomers} totalRevenue={totalRevenue} totalOrders={orders.length} totalCustomers={customerSummaries.length} />} />
-          <Route path="products" element={<AdminProductsPage products={products} formRef={formRef} editingId={editingId} setEditingId={setEditingId} formData={formData} setFormData={setFormData} setImageFile={setImageFile} uploading={uploading} handleSubmit={handleProductSubmit} onDeleteProduct={handleDeleteProduct} />} />
+          <Route path="products" element={<AdminProductsPage products={products} formRef={formRef} editingId={editingId} setEditingId={setEditingId} formData={formData} setFormData={setFormData} setImageFile={setImageFile} uploading={uploading} handleSubmit={handleProductSubmit} onDeleteProduct={handleDeleteProduct} productSavedMessage={productSavedMessage} />} />
           <Route path="orders" element={<AdminOrdersPage statusFilter={statusFilter} setStatusFilter={setStatusFilter} orderSearch={orderSearch} setOrderSearch={setOrderSearch} filteredAdminOrders={filteredAdminOrders} updateOrderStatus={updateOrderStatus} deleteOrder={deleteOrder} ordersLoading={ordersLoading} />} />
           <Route path="settings" element={<AdminSettingsPage settings={settings} setSettings={setSettings} settingsSaved={settingsSaved} handleSettingsSave={handleSettingsSave} />} />
         </Route>

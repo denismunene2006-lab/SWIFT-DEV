@@ -85,12 +85,12 @@ export default function CheckoutPage({
 
         setStatus({
           type: 'success',
-          message: 'Payment request sent to your phone. We will update the order automatically once it is completed.',
+          message: 'Order placed successfully. Payment request sent to your phone.',
         })
       } else {
         setStatus({
           type: 'success',
-          message: 'Order placed successfully. You can manage it from the admin panel.',
+          message: 'Order placed successfully.',
         })
       }
 
@@ -127,10 +127,10 @@ export default function CheckoutPage({
           <form onSubmit={handleSubmit} className="space-y-6">
             {status.message && (
               <div
-                className={`rounded-2xl border p-4 text-center text-[10px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-top-2 ${
+                className={`rounded-2xl border px-4 py-3 text-sm font-medium animate-in fade-in slide-in-from-top-2 ${
                   status.type === 'success'
-                    ? 'border-emerald-100 bg-emerald-50 text-emerald-600'
-                    : 'border-red-100 bg-red-50 text-red-600'
+                    ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
+                    : 'border-red-100 bg-red-50 text-red-600 text-center text-[10px] font-black uppercase tracking-widest'
                 }`}
               >
                 {status.message}
@@ -211,7 +211,7 @@ export default function CheckoutPage({
               <p className="text-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 {paymentsEnabled
                   ? 'You will be prompted to complete payment on your phone'
-                  : 'Orders are saved in the backend and can be fulfilled from the admin panel'}
+                  : ''}
               </p>
             </div>
           </form>

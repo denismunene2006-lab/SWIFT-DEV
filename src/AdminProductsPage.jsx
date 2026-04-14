@@ -12,6 +12,7 @@ export default function AdminProductsPage({
   uploading,
   handleSubmit,
   onDeleteProduct,
+  productSavedMessage,
 }) {
   return (
     <main className="max-w-7xl mx-auto px-6 py-10 space-y-8 animate-in fade-in duration-500">
@@ -113,6 +114,11 @@ export default function AdminProductsPage({
             >
               {uploading ? <Loader2 className="animate-spin mx-auto" /> : editingId ? 'Update Product' : 'Create Product'}
             </button>
+            {productSavedMessage && (
+              <div className="rounded-2xl bg-emerald-50 border border-emerald-100 px-4 py-3 text-sm font-medium text-emerald-700">
+                {productSavedMessage}
+              </div>
+            )}
             {editingId && (
               <button
                 type="button"
