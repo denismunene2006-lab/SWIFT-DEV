@@ -226,6 +226,7 @@ export default function App() {
           description: settings.description.trim(),
           currency: settings.currency,
           logo_url: logoUrl,
+          updated_at: new Date().toISOString(),
         },
         { onConflict: 'id' },
       )
