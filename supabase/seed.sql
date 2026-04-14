@@ -1,0 +1,2 @@
+-- No demo seed data.
+-- Create real products and store settings from the admin panel or your own import flow.
